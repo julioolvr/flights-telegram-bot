@@ -7,11 +7,11 @@ import (
 	"os"
 )
 
-type Flight struct {
+type flight struct {
 	price int
 }
 
-type FlightResponse struct {
+type flightResponse struct {
 	Conversion struct {
 		Usd int
 	}
@@ -19,8 +19,8 @@ type FlightResponse struct {
 	Atimeutc int
 }
 
-type ApiResponse struct {
-	Data []FlightResponse
+type apiResponse struct {
+	Data []flightResponse
 }
 
 func main() {
@@ -33,7 +33,7 @@ func main() {
 		return
 	}
 
-	var response ApiResponse
+	var response apiResponse
 
 	err = json.NewDecoder(resp.Body).Decode(&response)
 
