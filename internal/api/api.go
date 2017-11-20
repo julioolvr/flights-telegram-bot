@@ -2,6 +2,7 @@ package api
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"time"
 
@@ -21,8 +22,12 @@ type apiResponse struct {
 }
 
 // FindFlights finds flights (TODO: Real comment)
-func FindFlights() (flights []models.Flight, err error) {
-	url := "https://api.skypicker.com/flights?flyFrom=JFK&to=LAX&dateFrom=01/01/2018&dateTo=10/01/2018&daysInDestinationFrom=10&daysInDestinationTo=15&curr=USD"
+func FindFlights(fromAirport string, toAirport string) (flights []models.Flight, err error) {
+	url := fmt.Sprintf(
+		"https://api.skypicker.com/flights?flyFrom=%s&to=%s&dateFrom=01/01/2018&dateTo=10/01/2018&daysInDestinationFrom=10&daysInDestinationTo=15&curr=USD",
+		fromAirport,
+		toAirport,
+	)
 
 	resp, err := http.Get(url)
 

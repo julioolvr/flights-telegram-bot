@@ -12,7 +12,7 @@ type flight struct {
 }
 
 func main() {
-	res, err := api.FindFlights()
+	res, err := api.FindFlights("JFK", "LAX")
 
 	if err == nil {
 		for i := 0; i < len(res); i++ {
