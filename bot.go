@@ -2,10 +2,10 @@ package main
 
 import (
 	"bytes"
+	"flag"
 	"fmt"
 	"log"
 	"os"
-	"strconv"
 
 	"github.com/julioolvr/flights-telegram-bot/internal/api"
 	godotenv "gopkg.in/joho/godotenv.v1"
@@ -27,14 +27,23 @@ func main() {
 		log.Fatalln(err)
 	}
 
+	flyFrom := flag.String("from", "", "Fly from")
+	flyTo := flag.String("to", "", "Fly to")
+	dateFrom := flag.String("leavingFrom", "", "Leaving starting on date")
+	dateTo := flag.String("leavingTo", "", "Leaving ending on date")
+	limit := flag.Int("limit", 5, "Number of results")
+	chatID := flag.Int("chat", 0, "Telegram chat id")
+
+	flag.Parse()
+
 	res, err := api.FindFlights(api.QueryParams{
-		FlyFrom:               "JFK",
-		FlyTo:                 "36.1699--115.1398-1000km",
-		DateFrom:              "01/01/2018",
-		DateTo:                "10/01/2018",
+		FlyFrom:               *flyFrom,  // "JFK",
+		FlyTo:                 *flyTo,    // "36.1699--115.1398-1000km",
+		DateFrom:              *dateFrom, // "01/01/2018",
+		DateTo:                *dateTo,   // "10/01/2018",
 		DaysInDestinationFrom: 10,
 		DaysInDestinationTo:   15,
-		Limit:                 5,
+		Limit:                 *limit, // 5,
 	})
 
 	if err != nil {
@@ -54,10 +63,5 @@ func main() {
 		))
 	}
 
-	chatID, err := strconv.ParseInt(os.Getenv("CHAT_ID"), 10, 64)
-	if err != nil {
-		log.Fatalln(err)
-	}
-
-	bot.SendMessage(tb.Chat{ID: chatID}, message.String(), nil)
+	bot.SendMessage(tb.Chat{ID: int64(*chatID)}, message.String(), nil)
 }
