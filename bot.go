@@ -12,7 +12,14 @@ type flight struct {
 }
 
 func main() {
-	res, err := api.FindFlights(api.QueryParams{FlyFrom: "JFK", FlyTo: "LAX"})
+	res, err := api.FindFlights(api.QueryParams{
+		FlyFrom:               "JFK",
+		FlyTo:                 "LAX",
+		DateFrom:              "01/01/2018",
+		DateTo:                "10/01/2018",
+		DaysInDestinationFrom: 10,
+		DaysInDestinationTo:   15,
+	})
 
 	if err == nil {
 		for i := 0; i < len(res); i++ {

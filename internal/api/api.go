@@ -6,6 +6,8 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/imdario/mergo"
+
 	"github.com/google/go-querystring/query"
 
 	"github.com/julioolvr/flights-telegram-bot/internal/models"
@@ -25,12 +27,27 @@ type apiResponse struct {
 
 // QueryParams are the parameters that can be used to query the API
 type QueryParams struct {
-	FlyFrom string `url:"flyFrom"`
-	FlyTo   string `url:"to"`
+	FlyFrom               string `url:"flyFrom"`
+	FlyTo                 string `url:"to"`
+	DateFrom              string `url:"dateFrom"` // TODO: Make dates the time.Time type?
+	DateTo                string `url:"dateTo"`
+	DaysInDestinationFrom int    `url:"daysInDestinationFrom"`
+	DaysInDestinationTo   int    `url:"daysInDestinationTo"`
+	Currency              string `url:"curr"`
 }
 
 // FindFlights finds flights (TODO: Real comment)
-func FindFlights(options QueryParams) (flights []models.Flight, err error) {
+func FindFlights(userOptions QueryParams) (flights []models.Flight, err error) {
+	options := QueryParams{
+		Currency: "USD",
+	}
+
+	err = mergo.MergeWithOverwrite(&options, userOptions)
+
+	if err != nil {
+		return flights, err
+	}
+
 	querystring, err := query.Values(options)
 
 	if err != nil {
@@ -38,7 +55,7 @@ func FindFlights(options QueryParams) (flights []models.Flight, err error) {
 	}
 
 	url := fmt.Sprintf(
-		"https://api.skypicker.com/flights?%s&dateFrom=01/01/2018&dateTo=10/01/2018&daysInDestinationFrom=10&daysInDestinationTo=15&curr=USD",
+		"https://api.skypicker.com/flights?%s",
 		querystring.Encode(),
 	)
 
