@@ -1,10 +1,15 @@
 package main
 
 import (
+	"bytes"
 	"fmt"
+	"log"
 	"os"
+	"strconv"
 
 	"github.com/julioolvr/flights-telegram-bot/internal/api"
+	godotenv "gopkg.in/joho/godotenv.v1"
+	tb "gopkg.in/tucnak/telebot.v1"
 )
 
 type flight struct {
@@ -12,6 +17,16 @@ type flight struct {
 }
 
 func main() {
+	err := godotenv.Load()
+	if err != nil {
+		log.Fatalln("Error loading .env file")
+	}
+
+	bot, err := tb.NewBot(os.Getenv("BOT_TOKEN"))
+	if err != nil {
+		log.Fatalln(err)
+	}
+
 	res, err := api.FindFlights(api.QueryParams{
 		FlyFrom:               "JFK",
 		FlyTo:                 "36.1699--115.1398-1000km",
@@ -22,11 +37,20 @@ func main() {
 		Limit:                 5,
 	})
 
-	if err == nil {
-		for _, flight := range res {
-			fmt.Println(flight)
-		}
-	} else {
-		fmt.Fprintf(os.Stderr, "Error with request to API %s\n", err)
+	if err != nil {
+		log.Fatalln(err)
 	}
+
+	var message bytes.Buffer
+
+	for _, flight := range res {
+		message.WriteString(fmt.Sprintf("%s\n", flight))
+	}
+
+	chatID, err := strconv.ParseInt(os.Getenv("CHAT_ID"), 10, 64)
+	if err != nil {
+		log.Fatalln(err)
+	}
+
+	bot.SendMessage(tb.Chat{ID: chatID}, message.String(), nil)
 }
