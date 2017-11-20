@@ -45,12 +45,12 @@ func main() {
 
 	for _, flight := range res {
 		message.WriteString(fmt.Sprintf(
-			"$%d - 🛫 %s on %s / 🛬 %s on %s\n",
+			"$%d %s ✈️ %s / 🛫 %s - 🛬 %s\n",
 			flight.Price,
 			flight.From.Airport,
-			flight.Depature.Format("2006-01-02"),
 			flight.To.Airport,
-			flight.Arrival.Format("2006-01-02"),
+			flight.Depature.Format("2006-01-02"),
+			flight.ReturnArrival.Format("2006-01-02"),
 		))
 	}
 

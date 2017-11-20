@@ -8,11 +8,12 @@ import (
 // Flight represents a single Flight with its price, dates and related
 // information
 type Flight struct {
-	Price    int
-	Depature time.Time
-	Arrival  time.Time
-	From     FlightLocation
-	To       FlightLocation
+	Price         int
+	Depature      time.Time
+	Arrival       time.Time
+	ReturnArrival time.Time // TODO: Make a "Trip" that includes both back and forth flights
+	From          FlightLocation
+	To            FlightLocation
 }
 
 // FlightLocation represents a departure or destination location of

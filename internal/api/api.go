@@ -21,6 +21,11 @@ type flightResponse struct {
 	Atimeutc int64
 	Flyfrom  string
 	Flyto    string
+	Route    []routeResponse
+}
+
+type routeResponse struct {
+	Atimeutc int64
 }
 
 type apiResponse struct {
@@ -90,6 +95,7 @@ func FindFlights(userOptions QueryParams) (flights []models.Flight, err error) {
 			To: models.FlightLocation{
 				Airport: flightData.Flyto,
 			},
+			ReturnArrival: time.Unix(flightData.Route[len(flightData.Route)-1].Atimeutc, 0),
 		}
 	}
 
