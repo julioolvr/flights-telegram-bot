@@ -9,6 +9,7 @@ import (
 
 	"github.com/julioolvr/flights-telegram-bot/internal/api"
 	godotenv "gopkg.in/joho/godotenv.v1"
+	"gopkg.in/robfig/cron.v2"
 	tb "gopkg.in/tucnak/telebot.v1"
 )
 
@@ -36,32 +37,41 @@ func main() {
 
 	flag.Parse()
 
-	res, err := api.FindFlights(api.QueryParams{
-		FlyFrom:               *flyFrom,  // "JFK",
-		FlyTo:                 *flyTo,    // "36.1699--115.1398-1000km",
-		DateFrom:              *dateFrom, // "01/01/2018",
-		DateTo:                *dateTo,   // "10/01/2018",
-		DaysInDestinationFrom: 10,
-		DaysInDestinationTo:   15,
-		Limit:                 *limit, // 5,
+	c := cron.New()
+
+	c.AddFunc("TZ=America/Argentina/Buenos_Aires 0 11 * * *", func() {
+		res, err := api.FindFlights(api.QueryParams{
+			FlyFrom:               *flyFrom,  // "JFK",
+			FlyTo:                 *flyTo,    // "36.1699--115.1398-1000km",
+			DateFrom:              *dateFrom, // "01/01/2018",
+			DateTo:                *dateTo,   // "10/01/2018",
+			DaysInDestinationFrom: 10,
+			DaysInDestinationTo:   15,
+			Limit:                 *limit, // 5,
+		})
+
+		if err != nil {
+			log.Fatalln(err)
+		}
+
+		var message bytes.Buffer
+
+		for _, flight := range res {
+			message.WriteString(fmt.Sprintf(
+				"$%d %s ✈️ %s / 🛫 %s - 🛬 %s\n",
+				flight.Price,
+				flight.From.Airport,
+				flight.To.Airport,
+				flight.Depature.Format("2006-01-02"),
+				flight.ReturnArrival.Format("2006-01-02"),
+			))
+		}
+
+		bot.SendMessage(tb.Chat{ID: int64(*chatID)}, message.String(), nil)
 	})
 
-	if err != nil {
-		log.Fatalln(err)
-	}
+	c.Start()
 
-	var message bytes.Buffer
-
-	for _, flight := range res {
-		message.WriteString(fmt.Sprintf(
-			"$%d %s ✈️ %s / 🛫 %s - 🛬 %s\n",
-			flight.Price,
-			flight.From.Airport,
-			flight.To.Airport,
-			flight.Depature.Format("2006-01-02"),
-			flight.ReturnArrival.Format("2006-01-02"),
-		))
-	}
-
-	bot.SendMessage(tb.Chat{ID: int64(*chatID)}, message.String(), nil)
+	// TODO: Is this a good way to leave a program running?
+	select {}
 }
