@@ -14,7 +14,7 @@ type flight struct {
 func main() {
 	res, err := api.FindFlights(api.QueryParams{
 		FlyFrom:               "JFK",
-		FlyTo:                 "LAX",
+		FlyTo:                 "36.1699--115.1398-1000km",
 		DateFrom:              "01/01/2018",
 		DateTo:                "10/01/2018",
 		DaysInDestinationFrom: 10,

@@ -19,6 +19,8 @@ type flightResponse struct {
 	}
 	Dtimeutc int64
 	Atimeutc int64
+	Flyfrom  string
+	Flyto    string
 }
 
 type apiResponse struct {
@@ -82,6 +84,12 @@ func FindFlights(userOptions QueryParams) (flights []models.Flight, err error) {
 			Price:    flightData.Conversion.Usd,
 			Depature: time.Unix(flightData.Dtimeutc, 0),
 			Arrival:  time.Unix(flightData.Atimeutc, 0),
+			From: models.FlightLocation{
+				Airport: flightData.Flyfrom,
+			},
+			To: models.FlightLocation{
+				Airport: flightData.Flyto,
+			},
 		}
 	}
 
