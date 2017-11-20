@@ -44,7 +44,14 @@ func main() {
 	var message bytes.Buffer
 
 	for _, flight := range res {
-		message.WriteString(fmt.Sprintf("%s\n", flight))
+		message.WriteString(fmt.Sprintf(
+			"$%d - 🛫 %s on %s / 🛬 %s on %s\n",
+			flight.Price,
+			flight.From.Airport,
+			flight.Depature.Format("2006-01-02"),
+			flight.To.Airport,
+			flight.Arrival.Format("2006-01-02"),
+		))
 	}
 
 	chatID, err := strconv.ParseInt(os.Getenv("CHAT_ID"), 10, 64)
