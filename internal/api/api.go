@@ -3,6 +3,7 @@ package api
 import (
 	"encoding/json"
 	"net/http"
+	"time"
 
 	"github.com/julioolvr/flights-telegram-bot/internal/models"
 )
@@ -11,8 +12,8 @@ type flightResponse struct {
 	Conversion struct {
 		Usd int
 	}
-	Dtimeutc int
-	Atimeutc int
+	Dtimeutc int64
+	Atimeutc int64
 }
 
 type apiResponse struct {
@@ -40,7 +41,11 @@ func FindFlights() (flights []models.Flight, err error) {
 	flights = make([]models.Flight, numberOfFlights)
 
 	for i := 0; i < numberOfFlights; i++ {
-		flights[i] = models.Flight{Price: response.Data[i].Conversion.Usd}
+		flights[i] = models.Flight{
+			Price:    response.Data[i].Conversion.Usd,
+			Depature: time.Unix(response.Data[i].Dtimeutc, 0),
+			Arrival:  time.Unix(response.Data[i].Atimeutc, 0),
+		}
 	}
 
 	return flights, err
