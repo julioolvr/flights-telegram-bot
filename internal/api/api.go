@@ -6,6 +6,8 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/google/go-querystring/query"
+
 	"github.com/julioolvr/flights-telegram-bot/internal/models"
 )
 
@@ -21,12 +23,23 @@ type apiResponse struct {
 	Data []flightResponse
 }
 
+// QueryParams are the parameters that can be used to query the API
+type QueryParams struct {
+	FlyFrom string `url:"flyFrom"`
+	FlyTo   string `url:"to"`
+}
+
 // FindFlights finds flights (TODO: Real comment)
-func FindFlights(fromAirport string, toAirport string) (flights []models.Flight, err error) {
+func FindFlights(options QueryParams) (flights []models.Flight, err error) {
+	querystring, err := query.Values(options)
+
+	if err != nil {
+		return flights, err
+	}
+
 	url := fmt.Sprintf(
-		"https://api.skypicker.com/flights?flyFrom=%s&to=%s&dateFrom=01/01/2018&dateTo=10/01/2018&daysInDestinationFrom=10&daysInDestinationTo=15&curr=USD",
-		fromAirport,
-		toAirport,
+		"https://api.skypicker.com/flights?%s&dateFrom=01/01/2018&dateTo=10/01/2018&daysInDestinationFrom=10&daysInDestinationTo=15&curr=USD",
+		querystring.Encode(),
 	)
 
 	resp, err := http.Get(url)
