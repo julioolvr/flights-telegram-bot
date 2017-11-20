@@ -15,7 +15,9 @@ func main() {
 	res, err := api.FindFlights()
 
 	if err == nil {
-		fmt.Printf("Response %+v\n", res)
+		for i := 0; i < len(res); i++ {
+			fmt.Println(res[i])
+		}
 	} else {
 		fmt.Fprintf(os.Stderr, "Error with request to API %s\n", err)
 	}
