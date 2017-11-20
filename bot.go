@@ -19,6 +19,7 @@ func main() {
 		DateTo:                "10/01/2018",
 		DaysInDestinationFrom: 10,
 		DaysInDestinationTo:   15,
+		Limit:                 5,
 	})
 
 	if err == nil {

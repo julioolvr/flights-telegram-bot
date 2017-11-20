@@ -34,12 +34,14 @@ type QueryParams struct {
 	DaysInDestinationFrom int    `url:"daysInDestinationFrom"`
 	DaysInDestinationTo   int    `url:"daysInDestinationTo"`
 	Currency              string `url:"curr"`
+	Limit                 int    `url:"limit"`
 }
 
 // FindFlights finds flights (TODO: Real comment)
 func FindFlights(userOptions QueryParams) (flights []models.Flight, err error) {
 	options := QueryParams{
 		Currency: "USD",
+		Limit:    200,
 	}
 
 	err = mergo.MergeWithOverwrite(&options, userOptions)
