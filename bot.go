@@ -1,10 +1,10 @@
-package main
+package flightsBot
 
 import (
 	"fmt"
 	"os"
 
-	"github.com/julioolvr/flights-telegram-bot/api"
+	"github.com/julioolvr/flights-telegram-bot/internal/api"
 )
 
 type flight struct {
