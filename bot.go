@@ -22,8 +22,8 @@ func main() {
 	})
 
 	if err == nil {
-		for i := 0; i < len(res); i++ {
-			fmt.Println(res[i])
+		for _, flight := range res {
+			fmt.Println(flight)
 		}
 	} else {
 		fmt.Fprintf(os.Stderr, "Error with request to API %s\n", err)

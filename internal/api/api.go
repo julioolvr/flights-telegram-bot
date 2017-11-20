@@ -75,11 +75,11 @@ func FindFlights(userOptions QueryParams) (flights []models.Flight, err error) {
 	numberOfFlights := len(response.Data)
 	flights = make([]models.Flight, numberOfFlights)
 
-	for i := 0; i < numberOfFlights; i++ {
+	for i, flightData := range response.Data {
 		flights[i] = models.Flight{
-			Price:    response.Data[i].Conversion.Usd,
-			Depature: time.Unix(response.Data[i].Dtimeutc, 0),
-			Arrival:  time.Unix(response.Data[i].Atimeutc, 0),
+			Price:    flightData.Conversion.Usd,
+			Depature: time.Unix(flightData.Dtimeutc, 0),
+			Arrival:  time.Unix(flightData.Atimeutc, 0),
 		}
 	}
 
