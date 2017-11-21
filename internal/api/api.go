@@ -4,16 +4,13 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
-	"time"
 
 	"github.com/imdario/mergo"
 
 	"github.com/google/go-querystring/query"
-
-	"github.com/julioolvr/flights-telegram-bot/internal/models"
 )
 
-type flightResponse struct {
+type FlightResponse struct {
 	Conversion struct {
 		Usd int
 	}
@@ -21,15 +18,18 @@ type flightResponse struct {
 	Atimeutc int64
 	Flyfrom  string
 	Flyto    string
-	Route    []routeResponse
+	Route    []RouteResponse
 }
 
-type routeResponse struct {
+type RouteResponse struct {
 	Atimeutc int64
+	Dtimeutc int64
+	FlyFrom  string
+	FlyTo    string
 }
 
-type apiResponse struct {
-	Data []flightResponse
+type ApiResponse struct {
+	Data []FlightResponse
 }
 
 // QueryParams are the parameters that can be used to query the API
@@ -45,7 +45,7 @@ type QueryParams struct {
 }
 
 // FindFlights finds flights (TODO: Real comment)
-func FindFlights(userOptions QueryParams) (flights []models.Flight, err error) {
+func FindFlights(userOptions QueryParams) (response ApiResponse, err error) {
 	options := QueryParams{
 		Currency: "USD",
 		Limit:    200,
@@ -54,13 +54,13 @@ func FindFlights(userOptions QueryParams) (flights []models.Flight, err error) {
 	err = mergo.MergeWithOverwrite(&options, userOptions)
 
 	if err != nil {
-		return flights, err
+		return response, err
 	}
 
 	querystring, err := query.Values(options)
 
 	if err != nil {
-		return flights, err
+		return response, err
 	}
 
 	url := fmt.Sprintf(
@@ -71,33 +71,10 @@ func FindFlights(userOptions QueryParams) (flights []models.Flight, err error) {
 	resp, err := http.Get(url)
 
 	if err != nil {
-		return flights, err
+		return response, err
 	}
 
-	var response apiResponse
 	err = json.NewDecoder(resp.Body).Decode(&response)
 
-	if err != nil {
-		return flights, err
-	}
-
-	numberOfFlights := len(response.Data)
-	flights = make([]models.Flight, numberOfFlights)
-
-	for i, flightData := range response.Data {
-		flights[i] = models.Flight{
-			Price:    flightData.Conversion.Usd,
-			Depature: time.Unix(flightData.Dtimeutc, 0),
-			Arrival:  time.Unix(flightData.Atimeutc, 0),
-			From: models.FlightLocation{
-				Airport: flightData.Flyfrom,
-			},
-			To: models.FlightLocation{
-				Airport: flightData.Flyto,
-			},
-			ReturnArrival: time.Unix(flightData.Route[len(flightData.Route)-1].Atimeutc, 0),
-		}
-	}
-
-	return flights, err
+	return response, err
 }

@@ -7,7 +7,7 @@ import (
 	"log"
 	"os"
 
-	"github.com/julioolvr/flights-telegram-bot/internal/api"
+	"github.com/julioolvr/flights-telegram-bot/internal/services/flightService"
 	godotenv "gopkg.in/joho/godotenv.v1"
 	"gopkg.in/robfig/cron.v2"
 	tb "gopkg.in/tucnak/telebot.v1"
@@ -40,7 +40,7 @@ func main() {
 	c := cron.New()
 
 	c.AddFunc("TZ=America/Argentina/Buenos_Aires 0 11 * * *", func() {
-		res, err := api.FindFlights(api.QueryParams{
+		res, err := flightService.Search(flightService.FindFlightsOptions{
 			FlyFrom:               *flyFrom,  // "JFK",
 			FlyTo:                 *flyTo,    // "36.1699--115.1398-1000km",
 			DateFrom:              *dateFrom, // "01/01/2018",
@@ -60,10 +60,10 @@ func main() {
 			message.WriteString(fmt.Sprintf(
 				"$%d %s ✈️ %s / 🛫 %s - 🛬 %s\n",
 				flight.Price,
-				flight.From.Airport,
-				flight.To.Airport,
-				flight.Depature.Format("2006-01-02"),
-				flight.ReturnArrival.Format("2006-01-02"),
+				flight.DepartsFrom().Airport,
+				flight.Destination().Airport,
+				flight.DepartsAt().Format("2006-01-02"),
+				flight.ReturnsAt().Format("2006-01-02"),
 			))
 		}
 
