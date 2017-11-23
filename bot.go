@@ -40,15 +40,14 @@ func main() {
 	c := cron.New()
 
 	c.AddFunc("TZ=America/Argentina/Buenos_Aires 0 11 * * *", func() {
-		res, err := flightService.Search(flightService.FindFlightsOptions{
-			FlyFrom:               *flyFrom,  // "JFK",
-			FlyTo:                 *flyTo,    // "36.1699--115.1398-1000km",
-			DateFrom:              *dateFrom, // "01/01/2018",
-			DateTo:                *dateTo,   // "10/01/2018",
-			DaysInDestinationFrom: 10,
-			DaysInDestinationTo:   15,
-			Limit:                 *limit, // 5,
-		})
+		res, err := flightService.
+			Find().
+			From(*flyFrom).
+			To(*flyTo).
+			DepartureDateRange(*dateFrom, *dateTo).
+			DaysInDestination(10, 15).
+			Limit(*limit).
+			Exec()
 
 		if err != nil {
 			log.Fatalln(err)
