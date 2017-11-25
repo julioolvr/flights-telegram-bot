@@ -57,16 +57,24 @@ func main() {
 
 		for _, flight := range res {
 			message.WriteString(fmt.Sprintf(
-				"💸 $%d 📅 %s - %s\n🛫 %s - 🛬 %s\n\n",
+				"💸 $%d 📅 %s - %s\n🛫 %s - 🛬 %s\n[Book!](%s)\n\n",
 				flight.Price,
 				flight.DepartsAt().Format("2006-01-02"),
 				flight.ReturnsAt().Format("2006-01-02"),
 				flight.DepartsFrom().Airport,
 				flight.Destination().Airport,
+				flight.BookingLink(),
 			))
 		}
 
-		bot.SendMessage(tb.Chat{ID: int64(*chatID)}, message.String(), nil)
+		bot.SendMessage(
+			tb.Chat{ID: int64(*chatID)},
+			message.String(),
+			&tb.SendOptions{
+				DisableWebPagePreview: true,
+				ParseMode:             "Markdown",
+			},
+		)
 	})
 
 	c.Start()

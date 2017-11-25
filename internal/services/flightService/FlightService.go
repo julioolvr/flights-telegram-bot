@@ -137,7 +137,8 @@ func buildFlightFromResponse(response api.FlightResponse) flight.Flight {
 	}
 
 	return flight.Flight{
-		Price: response.Conversion.Usd,
+		Price:        response.Conversion.Usd,
+		BookingToken: response.BookingToken,
 		Routes: []flight.Route{flight.Route{
 			From:     flight.Location{Airport: flight.AirportCode(response.Flyfrom)},
 			To:       flight.Location{Airport: flight.AirportCode(response.Flyto)},

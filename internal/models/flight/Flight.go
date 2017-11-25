@@ -28,8 +28,9 @@ type RouteSegment struct {
 // Flight represents a single Flight with its price, dates and related
 // information
 type Flight struct {
-	Price  int
-	Routes []Route
+	Price        int
+	BookingToken string
+	Routes       []Route
 }
 
 // Location represents an airport visited in some route during the flight
@@ -59,6 +60,11 @@ func (flight Flight) ReturnsAt() time.Time {
 	lastRoute := flight.Routes[numberOfRoutes-1]
 	segmentsInRoute := len(lastRoute.Segments)
 	return lastRoute.Segments[segmentsInRoute-1].Arrival
+}
+
+// BookingLink generates a URL for kiwi.com that allows to book the given flight.
+func (flight Flight) BookingLink() string {
+	return fmt.Sprintf("https://www.kiwi.com/us/booking?passengers=1&token=%s", flight.BookingToken)
 }
 
 func (flight Flight) String() string {

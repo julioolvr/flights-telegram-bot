@@ -14,11 +14,12 @@ type FlightResponse struct {
 	Conversion struct {
 		Usd int
 	}
-	Dtimeutc int64
-	Atimeutc int64
-	Flyfrom  string
-	Flyto    string
-	Route    []RouteResponse
+	Dtimeutc     int64
+	Atimeutc     int64
+	Flyfrom      string
+	Flyto        string
+	Route        []RouteResponse
+	BookingToken string `json:"booking_token"`
 }
 
 type RouteResponse struct {
